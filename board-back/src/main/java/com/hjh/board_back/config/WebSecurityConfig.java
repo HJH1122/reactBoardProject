@@ -39,7 +39,7 @@ public class WebSecurityConfig {
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .cors(cors -> cors
-                    .configurationSource(corsConfigrationSource())
+                    .configurationSource(corsConfigurationSource())
             )
             .csrf(CsrfConfigurer::disable)
             .httpBasic(HttpBasicConfigurer::disable)
@@ -62,10 +62,10 @@ public class WebSecurityConfig {
         }
 
         @Bean
-        protected CorsConfigurationSource corsConfigrationSource(){
+        protected CorsConfigurationSource corsConfigurationSource(){
 
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.addAllowedOrigin("*");
+            configuration.addAllowedOrigin("http://localhost:3000");
             configuration.addAllowedMethod("*");
             configuration.addExposedHeader("*");
 
