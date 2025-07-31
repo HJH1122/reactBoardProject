@@ -86,6 +86,8 @@ export default function Header() {
       }
     }, [searchWord])
 
+
+
     if(!status){
       // render: 검색 버튼 컴포넌트(클릭 false상태)
       return (
@@ -122,7 +124,8 @@ export default function Header() {
     // event handler: 마이페이지 버튼 클릭 이벤트 처리함수
     const onSignOutButtonClickHandler = () =>{
       resetLoginUser();
-      navigate(MAIN_PATH());
+      setCookies('accessToken', '', { path: MAIN_PATH(), expires: new Date() });
+      navigate(MAIN_PATH()); 
     }
 
 
@@ -165,7 +168,7 @@ export default function Header() {
 
   }
 
-  // effect: path가 변결될때마다 실행될 함수
+  // effect: path가 변경될때마다 실행될 함수
   useEffect(()=>{
 
     const isAuthPage = pathname.startsWith(AUTH_PATH());
@@ -184,6 +187,10 @@ export default function Header() {
     setUserPage(isUserPage);
 
   },[pathname])
+
+  useEffect(()=>{
+    setLogin(loginUser !== null);
+  }, [loginUser])
 
   return (
     <div id='header'>
