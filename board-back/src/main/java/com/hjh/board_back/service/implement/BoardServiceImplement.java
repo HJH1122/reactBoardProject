@@ -8,12 +8,17 @@ import org.springframework.stereotype.Service;
 
 import com.hjh.board_back.dto.request.board.PostBoardRequestDto;
 import com.hjh.board_back.dto.response.ResponseDto;
+import com.hjh.board_back.dto.response.board.GetBoardResponseDto;
 import com.hjh.board_back.dto.response.board.PostBoardResponseDto;
+import com.hjh.board_back.dto.response.board.PutFavoriteResponseDto;
 import com.hjh.board_back.entity.BoardEntity;
+import com.hjh.board_back.entity.FavoriteEntity;
 import com.hjh.board_back.entity.ImageEntity;
 import com.hjh.board_back.repository.BoardRepository;
+import com.hjh.board_back.repository.FavoriteRepository;
 import com.hjh.board_back.repository.ImageRepository;
 import com.hjh.board_back.repository.UserRepository;
+import com.hjh.board_back.repository.resultSet.GetBoardResultSet;
 import com.hjh.board_back.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +30,32 @@ public class BoardServiceImplement implements BoardService{
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final FavoriteRepository favoriteRepository;
+
+    @Override
+    public ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber) {
+       
+        GetBoardResultSet resultSet = null;
+        List<ImageEntity> imageEntities = new ArrayList<>();
+
+        try{
+
+            resultSet = boardRepository.getBoard(boardNumber);
+            if(resultSet == null) return GetBoardResponseDto.notExistBoard();
+
+            imageEntities = imageRepository.findByBoardNumber(boardNumber);
+
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            boardEntity.increaseViewCount();
+            boardRepository.save(boardEntity);
+
+        }catch(Exception exception){
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetBoardResponseDto.success(resultSet, imageEntities);
+    }
+
 
     @Override
     public ResponseEntity<? super PostBoardResponseDto> postBoard(PostBoardRequestDto dto, String email) {
@@ -54,6 +85,38 @@ public class BoardServiceImplement implements BoardService{
         }
         return PostBoardResponseDto.success();
     }
+
+
+    @Override
+    public ResponseEntity<? super PutFavoriteResponseDto> putFavorite(Integer boardNumber, String email) {
+        try{
+
+            boolean existedUser = userRepository.existsByEmail(email);
+            if(!existedUser) return PutFavoriteResponseDto.noExistUser();
+
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            if(boardEntity == null) return PutFavoriteResponseDto.noExistBoard();
+
+            FavoriteEntity favoriteEntity = favoriteRepository.findByBoardNumberAndUserEmail(boardNumber, email);
+            if(favoriteEntity == null){
+                favoriteEntity = new FavoriteEntity(email, boardNumber);
+                favoriteRepository.save(favoriteEntity);
+                boardEntity.increaseFavoriteCount();
+            }
+            else{
+                favoriteRepository.delete(favoriteEntity);
+                boardEntity.decreaseFavoriteCount();
+            }
+            boardRepository.save(boardEntity);
+
+
+        }catch(Exception exception){
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return PutFavoriteResponseDto.success();
+    }
+
 
     
     
