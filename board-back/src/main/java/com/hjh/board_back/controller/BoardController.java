@@ -8,6 +8,7 @@ import com.hjh.board_back.dto.response.board.PostBoardResponseDto;
 import com.hjh.board_back.dto.response.board.PutFavoriteResponseDto;
 import com.hjh.board_back.service.BoardService;
 import com.hjh.board_back.dto.response.board.GetBoardResponseDto;
+import com.hjh.board_back.dto.response.board.GetFavoriteListResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,13 @@ public class BoardController {
         ResponseEntity<? super GetBoardResponseDto> response = boardService.getBoard(boardNumber);
         return response;
     }
+
+    @GetMapping("/{boardNumber}/favorite-list")
+    public ResponseEntity<? super GetFavoriteListResponseDto> getFavoriteList(@PathVariable("boardNumber") Integer boardNumber) {
+        ResponseEntity<? super GetFavoriteListResponseDto> response = boardService.getFavoriteList(boardNumber);
+        return response;
+    }
+    
     
 
     @PostMapping("")
