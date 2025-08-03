@@ -10,6 +10,7 @@ import com.hjh.board_back.dto.response.board.PostBoardResponseDto;
 import com.hjh.board_back.dto.response.board.PutFavoriteResponseDto;
 import com.hjh.board_back.dto.response.board.PostCommentResponseDto;
 import com.hjh.board_back.dto.response.board.GetCommentListResponseDto;
+import com.hjh.board_back.dto.response.board.IncreaseViewCountResponseDto;
 
 public interface BoardService {
     
@@ -21,5 +22,6 @@ public interface BoardService {
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentResquestDto dto, Integer boardNumber, String email );
     
     ResponseEntity<? super PutFavoriteResponseDto> putFavorite(Integer boardNumber, String email );
+    ResponseEntity<? super IncreaseViewCountResponseDto> increaseViewCount(Integer boardNumber );
 
 }

@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import FavoriteItem from 'components/FavoriteItem'
 import { Board, CommentListItem, FavoriteListItem } from 'types/interface'
-import { boardMock, commentListMock, favoriteListMock } from 'mocks'
+import { commentListMock, favoriteListMock } from 'mocks'
 import CommentItem from 'components/CommentItem'
 import Pagination from 'components/Pagination'
 
@@ -10,6 +10,12 @@ import defaultProfileImage from 'assets/image/default-profile-image.png';
 import { useLoginUserStore } from 'stores'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH } from 'constant'
+import { getBoardRequest, getCommentListRequest, getFavoriteListRequest, increaseViewCountRequest } from 'apis'
+import GetBoardResponseDto from 'apis/response/board/get-board.response.dto'
+import { ResponseDto } from 'apis/response'
+import { GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto } from 'apis/response/board'
+
+import dayjs from 'dayjs'
 
 export default function BoardDetail() {
   
@@ -17,11 +23,46 @@ export default function BoardDetail() {
   const {loginUser} = useLoginUserStore();
 
   const navigator = useNavigate();
+
+  const increaseViewCountResponse = (responseBody: IncreaseViewCountResponseDto | ResponseDto | null) =>{
+    if(!responseBody) return;
+    const {code} = responseBody;
+    if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+    if(code === 'DBE') alert('데이터베이스 오류입니다.');
+    return;
+  }
   
   const BoardDetailTop =() =>{
 
+    const [isWriter, setWriter] = useState<boolean>(false);
     const [board, setBoard] = useState<Board | null>(null);
     const [showMore, setShowMore] = useState<boolean>(false);
+
+    const getWriteDatetimeFormat = () =>{
+      if(!board) return '';
+      const date = dayjs(board.writeDatetime);
+      return date.format('YYYY. MM. DD.');
+    }
+
+    const getBoardResponse = (responseBody: GetBoardResponseDto | ResponseDto | null) =>{
+      if(!responseBody) return;
+      const { code }= responseBody;
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') {
+        
+        return;
+      }
+      const board: Board = {...responseBody as GetBoardResponseDto};
+      setBoard(board);
+
+      if(!loginUser) {
+        setWriter(false);
+        return;
+      }
+      const isWriter = loginUser.email === board.writerEmail;
+      setWriter(isWriter);
+    }
 
     const onNicknameClickHandler = () =>{
       if(!board) return;
@@ -47,7 +88,11 @@ export default function BoardDetail() {
 
     // 게시물 번호 path variable이 바뀔때마다 게시물 불러기
     useEffect(()=>{
-      setBoard(boardMock);
+      if(!boardNumber){
+        navigator(MAIN_PATH());
+        return;
+      }
+      getBoardRequest(boardNumber).then(getBoardResponse);
     }, [boardNumber])
 
     if(!board) return <></>
@@ -60,11 +105,13 @@ export default function BoardDetail() {
               <div className='board-detail-writer-profile-image' style={{backgroundImage: `url(${board.writerProfileImage ? board.writerProfileImage : defaultProfileImage})`}}></div>
               <div className='board-detail-writer-nickname' onClick={onNicknameClickHandler}>{board.writerNickname}</div>
               <div className='board-detail-info-divider'>{'\|'}</div>
-              <div className='board-detail-write-date'>{board.writeDatetime}</div>
+              <div className='board-detail-write-date'>{getWriteDatetimeFormat()}</div>
             </div>
+            {isWriter &&
             <div className='icon-button' onClick={onMoreButtonClickHandler}>
               <div className='icon more-icon'></div>
             </div>
+             }
             {showMore &&
             <div className='board-detail-more-box'>
               <div className='board-detail-update-button' onClick={onUpdateButtonClickHandler}>{'수정'}</div>
@@ -96,6 +143,35 @@ export default function BoardDetail() {
     const [showComment, setShowComment] = useState<boolean>(false);
     const [comment, setComment] = useState<string>('');
 
+    const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDto | ResponseDto | null) =>{
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      const {favoriteList} = responseBody as GetFavoriteListResponseDto;
+      setFavoriteList(favoriteList);
+      if(!loginUser) {
+        setFavorite(false);
+        return;
+      }
+      const isFavorite = favoriteList.findIndex(favorite => favorite.email === loginUser.email) !== -1;
+      setFavorite(isFavorite);
+    }
+
+    const getCommentListResponse = (responseBody: GetCommentListResponseDto | ResponseDto | null) =>{
+        if(!responseBody) return;
+        const { code } = responseBody;
+        if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+        if(code === 'DBE') alert('데이터베이스 오류입니다.');
+        if(code !== 'SU') return;
+
+        const {commentList} = responseBody as GetCommentListResponseDto;
+        setCommentList(commentList);
+        
+    }
+
     const onFavoriteClickHandler = () =>{
       setFavorite(!isFavorite);
     }
@@ -122,9 +198,11 @@ export default function BoardDetail() {
 
 
     useEffect(()=>{
+      if(!boardNumber) return;
 
-      setFavoriteList(favoriteListMock);
-      setCommentList(commentListMock);
+      getFavoriteListRequest(boardNumber).then(getFavoriteListResponse);
+
+      getCommentListRequest(boardNumber).then(getCommentListResponse);
 
     }, [])
     
@@ -183,6 +261,7 @@ export default function BoardDetail() {
           <div className='board-detail-bottom-comment-pagination-box'>
             <Pagination />
           </div>
+          {loginUser !== null &&
           <div className='board-detail-bottom-comment-input-box'>
             <div className='board-detail-bottom-comment-input-container'>
               <textarea ref={commentRef} className='board-detail-bottom-comment-textarea' placeholder='댓글을 작성해주세요.' value={comment} onChange={onCommentChangeHandler}/>
@@ -191,11 +270,23 @@ export default function BoardDetail() {
               </div>
             </div>
           </div>
+          }
         </div>
          }
       </div>
     )
   }
+
+  let effectFlag = true;
+  useEffect(()=>{
+    if(!boardNumber) return;
+    if(effectFlag){
+      effectFlag = false;
+      return;
+    }
+
+    increaseViewCountRequest(boardNumber).then(increaseViewCountResponse);
+  }, [boardNumber])
   
   return (
     <div id='board-detail-wrapper'>
