@@ -10,17 +10,21 @@ import defaultProfileImage from 'assets/image/default-profile-image.png';
 import { useLoginUserStore } from 'stores'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH } from 'constant'
-import { getBoardRequest, getCommentListRequest, getFavoriteListRequest, increaseViewCountRequest } from 'apis'
+import { deleteBoardRequest, getBoardRequest, getCommentListRequest, getFavoriteListRequest, increaseViewCountRequest, postCommentRequest, putFavoriteRequest } from 'apis'
 import GetBoardResponseDto from 'apis/response/board/get-board.response.dto'
 import { ResponseDto } from 'apis/response'
-import { GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto } from 'apis/response/board'
+import { DeleteBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto, PostCommentResponseDto, PutFavoriteResponseDto } from 'apis/response/board'
 
 import dayjs from 'dayjs'
+import { useCookies } from 'react-cookie'
+import { PostCommentRequestDto } from 'apis/request/board'
+import { usePagination } from 'hooks'
 
 export default function BoardDetail() {
   
   const {boardNumber} = useParams();
   const {loginUser} = useLoginUserStore();
+  const [cookies, setCookies] = useCookies();
 
   const navigator = useNavigate();
 
@@ -64,6 +68,20 @@ export default function BoardDetail() {
       setWriter(isWriter);
     }
 
+    const deleteBoardResponse = (responseBody: DeleteBoardResponseDto | ResponseDto | null) =>{
+      if(!responseBody) return;
+      const { code }= responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'NP') alert('권한이 없습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      navigator(MAIN_PATH());
+    }
+
     const onNicknameClickHandler = () =>{
       if(!board) return;
       navigator(USER_PATH(board.writerEmail));
@@ -81,9 +99,10 @@ export default function BoardDetail() {
     }
 
     const onDeleteButtonClickHandler = () =>{
-      if(!board || !loginUser) return;
+      if(!boardNumber || !board || !loginUser || !cookies.accessToken) return;
       if(loginUser.email !== board.writerEmail) return;
-      navigator(MAIN_PATH());
+      
+      deleteBoardRequest(boardNumber, cookies.accessToken).then(deleteBoardResponse);
     }
 
     // 게시물 번호 path variable이 바뀔때마다 게시물 불러기
@@ -124,7 +143,7 @@ export default function BoardDetail() {
         <div className='divider'></div>
         <div className='board-detail-top-main'>
           <div className='board-detail-main-text'>{board.content}</div>
-          {board.boardImageList.map(image => <img className='board-detail-main-image' src={image} />)}
+          {board.boardImageList.map((image,index) => <img key={index} className='board-detail-main-image' src={image} />)}
           
         </div>
       </div>
@@ -135,13 +154,18 @@ export default function BoardDetail() {
 
     const commentRef = useRef<HTMLTextAreaElement | null>(null);
 
+    const {
+        currentPage,currentSection,viewList,viewPageList,totalSection,
+        setTotalList,setCurrentPage,setCurrentSection
+    } = usePagination<CommentListItem>(3);
+
     const [favoriteList, setFavoriteList] = useState<FavoriteListItem[]>([]);
-    const [commentList, setCommentList] = useState<CommentListItem[]>([]);
 
     const [isFavorite, setFavorite] = useState<boolean>(false);
     const [showFavorite, setShowFavorite] = useState<boolean>(false);
-    const [showComment, setShowComment] = useState<boolean>(false);
+    const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
     const [comment, setComment] = useState<string>('');
+    const [showComment, setShowComment] = useState<boolean>(false);
 
     const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDto | ResponseDto | null) =>{
       if(!responseBody) return;
@@ -168,12 +192,46 @@ export default function BoardDetail() {
         if(code !== 'SU') return;
 
         const {commentList} = responseBody as GetCommentListResponseDto;
-        setCommentList(commentList);
-        
+        setTotalList(commentList);
+        setTotalCommentCount(commentList.length);
+    }
+
+    const putFavoriteResponse = (responseBody: PutFavoriteResponseDto | ResponseDto | null) =>{
+      if(!responseBody)return;
+      const {code} = responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      setComment('');
+      if(!boardNumber)return;
+      getFavoriteListRequest(boardNumber).then(getFavoriteListResponse);
+
+    }
+
+    const postCommentResponse = (responseBody: PostCommentResponseDto | ResponseDto | null) => {
+      if(!responseBody)return;
+      const {code} = responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      setComment('');
+
+      if(!boardNumber)return;
+      getCommentListRequest(boardNumber).then(getCommentListResponse);
     }
 
     const onFavoriteClickHandler = () =>{
-      setFavorite(!isFavorite);
+      if(!boardNumber || !loginUser || !cookies.accessToken ) return;
+      putFavoriteRequest(boardNumber, cookies.accessToken).then(putFavoriteResponse);
+
     }
 
     const onShowFavoriteClickHandler = () =>{
@@ -184,9 +242,11 @@ export default function BoardDetail() {
       setShowComment(!showComment);
     }
 
-    const onCommnetSubmitButtonClickHandler = () =>{
-      if(!comment) return;
-    }
+    const onCommentSubmitButtonClickHandler = () =>{
+      if(!comment || !boardNumber || !loginUser || !cookies.accessToken) return;
+      const requestBody: PostCommentRequestDto = { content : comment};
+      postCommentRequest(boardNumber, requestBody, cookies.accessToken).then(postCommentResponse);
+    } 
 
     const onCommentChangeHandler = (event:ChangeEvent<HTMLTextAreaElement>) =>{
       const {value} = event.target;
@@ -229,7 +289,7 @@ export default function BoardDetail() {
             <div className='icon-button'>
               <div className='icon comment-icon'></div>
             </div>
-            <div className='board-detail-bottom-button-text'>{`댓글 ${commentList.length}`}</div>
+            <div className='board-detail-bottom-button-text'>{`댓글 ${totalCommentCount}`}</div>
             <div className='icon-button' onClick={onShowCommentClickHandler}>
               {showComment ?
                 <div className='icon up-light-icon'></div> :
@@ -252,21 +312,28 @@ export default function BoardDetail() {
          {showComment &&
         <div className='board-detail-bottom-comment-box'>
           <div className='board-detail-bottom-comment-container'>
-            <div className='board-detail-bottom-comment-title'>{'댓글'}<span className='emphasis'>{commentList.length}</span></div>
+            <div className='board-detail-bottom-comment-title'>{'댓글'}<span className='emphasis'>{totalCommentCount}</span></div>
             <div className='board-detail-bottom-comment-list-container'>
-              {commentList.map(item => <CommentItem commentListItem={item} />)}
+              {viewList.map(item => <CommentItem key={item.commentNumber} commentListItem={item} />)}
             </div>
           </div>
           <div className='divider'></div>
           <div className='board-detail-bottom-comment-pagination-box'>
-            <Pagination />
+            <Pagination 
+            currentPage={currentPage}
+            currentSection={currentSection}
+            setCurrentPage={setCurrentPage}
+            setCurrentSection={setCurrentSection}
+            viewPageList={viewPageList}
+            totalSection={totalSection}
+            />
           </div>
           {loginUser !== null &&
           <div className='board-detail-bottom-comment-input-box'>
             <div className='board-detail-bottom-comment-input-container'>
               <textarea ref={commentRef} className='board-detail-bottom-comment-textarea' placeholder='댓글을 작성해주세요.' value={comment} onChange={onCommentChangeHandler}/>
               <div className='board-detail-bottom-comment-button-box'>
-                <div className={comment === '' ? 'disable-button' :  'black-button'} onClick={onCommnetSubmitButtonClickHandler}>{'댓글달기'}</div>
+                <div className={comment === '' ? 'disable-button' :  'black-button'} onClick={onCommentSubmitButtonClickHandler}>{'댓글달기'}</div>
               </div>
             </div>
           </div>

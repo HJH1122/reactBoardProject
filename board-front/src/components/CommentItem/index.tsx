@@ -11,6 +11,7 @@ interface Props{
 
 // component : Comment List Item 컴포넌트
 export default function CommentItem({commentListItem}: Props) {
+  console.log('commentListItem:', commentListItem);
 
     // properties
     const {nickname, profileImage, writeDatetime, content} = commentListItem;
@@ -33,7 +34,7 @@ export default function CommentItem({commentListItem}: Props) {
             <div className='comment-list-item-profile-image' style={{backgroundImage: `url(${profileImage? profileImage : defaultProfileImage})`}}></div>
         </div> 
         <div className='comment-list-item-nickname'>{nickname}</div>
-        <div className='comment-list-item-divider'>{}</div>
+        <div className='comment-list-item-divider'>|</div>
         <div className='comment-list-item-time'>{getElapsedTime()}</div>
       </div>
       <div className='comment-list-item-main'>

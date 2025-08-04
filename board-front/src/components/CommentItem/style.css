@@ -32,7 +32,7 @@
     line-height: 140%;
 }
 
-.comment-list-item-fivider{
+.comment-list-item-divider{
     color: rgba(0, 0, 0, 0.4);
     
     font-size: 16px;
@@ -53,5 +53,5 @@
 
     font-size: 18px;
     font-weight: 500;
-    line-height: 150;
+    line-height: 150%;
 }

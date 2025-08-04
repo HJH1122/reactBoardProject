@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.hjh.board_back.dto.request.board.PostCommentResquestDto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,7 @@ public class CommentEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int commentNumber;
     private String content;
+    @Column(name = "writer_datetime")
     private String writeDatetime;
     private String userEmail;
     private int boardNumber;

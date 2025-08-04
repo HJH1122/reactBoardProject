@@ -9,6 +9,8 @@ import com.hjh.board_back.entity.FavoriteEntity;
 import com.hjh.board_back.entity.primaryKey.FavoritePk;
 import com.hjh.board_back.repository.resultSet.GetFavoriteListResultSet;
 
+import jakarta.transaction.Transactional;
+
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, FavoritePk>{
 
     FavoriteEntity findByBoardNumberAndUserEmail(Integer boardNumber, String userEmail);
@@ -26,6 +28,9 @@ public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Favori
         nativeQuery = true
     )
     List<GetFavoriteListResultSet> getFavoriteList(Integer boardNumber);
+
+    @Transactional
+    void deleteByBoardNumber(Integer boardNumber);
     
 
 }

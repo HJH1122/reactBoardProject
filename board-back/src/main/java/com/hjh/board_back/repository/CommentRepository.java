@@ -9,12 +9,15 @@ import org.springframework.stereotype.Repository;
 import com.hjh.board_back.entity.CommentEntity;
 import com.hjh.board_back.repository.resultSet.GetCommentListResultSet;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
     
     @Query(
         value = 
         "SELECT "+
+        "C.comment_number AS commentNumber, " +
         "U.nickname AS nickname, "+
         "U.profile_image AS profileImage, "+
         "C.writer_datetime AS writeDatetime, "+
@@ -27,5 +30,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
         nativeQuery = true
     )
     List<GetCommentListResultSet> getCommentList(Integer boardNumber);
+
+    @Transactional
+    void deleteByBoardNumber(Integer boardNumber);
     
 } 
