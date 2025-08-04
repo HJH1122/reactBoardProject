@@ -2,6 +2,7 @@ package com.hjh.board_back.service;
 
 import org.springframework.http.ResponseEntity;
 
+import com.hjh.board_back.dto.request.board.PatchBoardRequestDto;
 import com.hjh.board_back.dto.request.board.PostBoardRequestDto;
 import com.hjh.board_back.dto.request.board.PostCommentResquestDto;
 import com.hjh.board_back.dto.response.board.GetBoardResponseDto;
@@ -11,6 +12,7 @@ import com.hjh.board_back.dto.response.board.PutFavoriteResponseDto;
 import com.hjh.board_back.dto.response.board.PostCommentResponseDto;
 import com.hjh.board_back.dto.response.board.GetCommentListResponseDto;
 import com.hjh.board_back.dto.response.board.IncreaseViewCountResponseDto;
+import com.hjh.board_back.dto.response.board.PatchBoardResponseDto;
 import com.hjh.board_back.dto.response.board.DeleteBoardResponseDto;
 
 public interface BoardService {
@@ -23,6 +25,7 @@ public interface BoardService {
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentResquestDto dto, Integer boardNumber, String email );
     
     ResponseEntity<? super PutFavoriteResponseDto> putFavorite(Integer boardNumber, String email );
+    ResponseEntity<? super PatchBoardResponseDto> patchBoard(PatchBoardRequestDto dto,Integer boardNumber, String email );
     ResponseEntity<? super IncreaseViewCountResponseDto> increaseViewCount(Integer boardNumber );
     ResponseEntity<? super DeleteBoardResponseDto> deleteBoard(Integer boardNumber, String email);
 

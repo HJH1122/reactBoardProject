@@ -3,6 +3,7 @@ package com.hjh.board_back.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hjh.board_back.dto.request.board.PatchBoardRequestDto;
 import com.hjh.board_back.dto.request.board.PostBoardRequestDto;
 import com.hjh.board_back.dto.request.board.PostCommentResquestDto;
 import com.hjh.board_back.dto.response.board.PostBoardResponseDto;
@@ -12,6 +13,7 @@ import com.hjh.board_back.service.BoardService;
 import com.hjh.board_back.dto.response.board.GetBoardResponseDto;
 import com.hjh.board_back.dto.response.board.GetFavoriteListResponseDto;
 import com.hjh.board_back.dto.response.board.IncreaseViewCountResponseDto;
+import com.hjh.board_back.dto.response.board.PatchBoardResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +87,14 @@ public class BoardController {
     public ResponseEntity<? super PutFavoriteResponseDto> putFavorite(@PathVariable("boardNumber") Integer boardNumber, @AuthenticationPrincipal String email) {
         ResponseEntity<? super PutFavoriteResponseDto> response = boardService.putFavorite(boardNumber, email);
         return response;
+    }
+
+    @PatchMapping("/{boardNumber}")
+    public ResponseEntity<? super PatchBoardResponseDto> patchBoard(@RequestBody @Valid PatchBoardRequestDto requestBody, @PathVariable("boardNumber") Integer boardNumber, @AuthenticationPrincipal String email){
+
+        ResponseEntity<? super PatchBoardResponseDto> response = boardService.patchBoard(requestBody, boardNumber, email);
+        return response;
+
     }
 
     @DeleteMapping("/{boardNumber}")
