@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.hjh.board_back.dto.response.board.GetCommentListResponseDto;
 import com.hjh.board_back.dto.response.board.DeleteBoardResponseDto;
+import com.hjh.board_back.dto.response.board.GetLatestBaordListResponDto;
+import com.hjh.board_back.dto.response.board.GetTop3BoardListResponseDto;
 
 
 
@@ -64,7 +66,18 @@ public class BoardController {
         ResponseEntity<? super IncreaseViewCountResponseDto> response = boardService.increaseViewCount(boardNumber);
         return response;
     }
-    
+
+    @GetMapping("/latest-list")
+    public ResponseEntity<? super GetLatestBaordListResponDto> getLatestBoardList(){
+        ResponseEntity<? super GetLatestBaordListResponDto> response = boardService.getLatestBoardList();
+        return response;
+    }
+
+    @GetMapping("/top-3")
+    public ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList(){
+        ResponseEntity<? super GetTop3BoardListResponseDto> response = boardService.getTop3BoardList();
+        return response;
+    }
 
     @PostMapping("")
     public ResponseEntity<? super PostBoardResponseDto> postBoard(@RequestBody @Valid PostBoardRequestDto requestBody, @AuthenticationPrincipal String email) {

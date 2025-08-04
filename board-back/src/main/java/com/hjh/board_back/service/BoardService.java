@@ -14,12 +14,16 @@ import com.hjh.board_back.dto.response.board.GetCommentListResponseDto;
 import com.hjh.board_back.dto.response.board.IncreaseViewCountResponseDto;
 import com.hjh.board_back.dto.response.board.PatchBoardResponseDto;
 import com.hjh.board_back.dto.response.board.DeleteBoardResponseDto;
+import com.hjh.board_back.dto.response.board.GetLatestBaordListResponDto;
+import com.hjh.board_back.dto.response.board.GetTop3BoardListResponseDto;
 
 public interface BoardService {
     
     ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber);
     ResponseEntity<? super GetFavoriteListResponseDto> getFavoriteList(Integer boardNumber);
     ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber);
+    ResponseEntity<? super GetLatestBaordListResponDto> getLatestBoardList();
+    ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList();
    
     ResponseEntity<? super PostBoardResponseDto> postBoard(PostBoardRequestDto dto, String email );
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentResquestDto dto, Integer boardNumber, String email );
