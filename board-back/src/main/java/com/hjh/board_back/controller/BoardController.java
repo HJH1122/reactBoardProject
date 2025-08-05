@@ -32,6 +32,8 @@ import com.hjh.board_back.dto.response.board.GetCommentListResponseDto;
 import com.hjh.board_back.dto.response.board.DeleteBoardResponseDto;
 import com.hjh.board_back.dto.response.board.GetLatestBaordListResponDto;
 import com.hjh.board_back.dto.response.board.GetTop3BoardListResponseDto;
+import com.hjh.board_back.dto.response.board.GetSearchBoardListResponseDto;
+import com.hjh.board_back.dto.response.board.GetUserBoardListResponseDto;
 
 
 
@@ -78,6 +80,19 @@ public class BoardController {
         ResponseEntity<? super GetTop3BoardListResponseDto> response = boardService.getTop3BoardList();
         return response;
     }
+
+    @GetMapping(value = {"/search-list/{searchWord}", "/search-list/{searchWord}/{preSearchWord}"})
+    public ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(@PathVariable("searchWord") String searchWord, @PathVariable(value = "preSearchWord", required = false) String preSearchWord){
+        ResponseEntity<? super GetSearchBoardListResponseDto> response = boardService.getSearchBoardList(searchWord, preSearchWord);
+        return response;
+    }
+
+    @GetMapping("/user-board-list/{email}")
+    public ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(@PathVariable("email") String email) {
+        ResponseEntity<? super GetUserBoardListResponseDto> response = boardService.getUserBoardList(email);
+        return response;
+    }
+    
 
     @PostMapping("")
     public ResponseEntity<? super PostBoardResponseDto> postBoard(@RequestBody @Valid PostBoardRequestDto requestBody, @AuthenticationPrincipal String email) {

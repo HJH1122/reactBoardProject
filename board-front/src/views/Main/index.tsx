@@ -7,9 +7,11 @@ import BoardItem from 'components/BoardItem'
 import Pagination from 'components/Pagination'
 import { useNavigate } from 'react-router-dom'
 import { SEARCH_PATH } from 'constant'
-import { getTop3BoardListRequest } from 'apis'
-import { GetTop3BoardListResponseDto } from 'apis/response/board'
+import { getLatestBoardListRequest, getPopularListRequest, getTop3BoardListRequest } from 'apis'
+import { GetLatestBoardListResponseDto, GetTop3BoardListResponseDto } from 'apis/response/board'
 import { ResponseDto } from 'apis/response'
+import { usePagination } from 'hooks'
+import { GetPopularListResponseDto } from 'apis/response/search'
 
 export default function Main() {
 
@@ -57,16 +59,52 @@ export default function Main() {
 
   const MainBottom = () =>{
 
-    const [currentBoardList, setCurrentBoardList] = useState<BoardListItem[]>([]);
+    const {
+        currentPage,
+        setCurrentPage,
+        currentSection,
+        setCurrentSection,
+        viewList,
+        viewPageList,
+        totalSection,
+        setTotalList,
+    } = usePagination<BoardListItem>(5);
     const [popularWordList, setPopularWordList] = useState<string[]>([]);
 
+    const getLatestBoardListResponse = (responseBody: GetLatestBoardListResponseDto | ResponseDto | null) =>{
+        if(!responseBody) return;
+        const {code } = responseBody;
+
+        if(code === 'DBE') alert('데이터베이스 오류입니다.');
+        if(code !== 'SU') return;
+
+        const {latestList} = responseBody as GetLatestBoardListResponseDto;
+
+        setTotalList(latestList);
+    }
+
+    const getPopularListResponse = (responseBody: GetPopularListResponseDto | ResponseDto | null) =>{
+        if(!responseBody) return;
+        const {code } = responseBody;
+
+        if(code === 'DBE') alert('데이터베이스 오류입니다.');
+        if(code !== 'SU') return;
+
+        const {popularWordList} = responseBody as GetPopularListResponseDto;
+
+        setPopularWordList(popularWordList);
+    }
+
     const onPopularWordClickHandler = (word: string) =>{
+      console.log("검색어 클릭:", word); // 클릭된 검색어 출력
+  const searchPath = SEARCH_PATH(word); // 검색 경로 생성
+  console.log("검색 경로:", searchPath); // 생성된 검색 경로 출력
       navigate(SEARCH_PATH(word));
     }
 
     useEffect(()=>{
-      setCurrentBoardList(latestBoardListMock);
-      setPopularWordList(['안녕','잘가','또봐']);
+      getLatestBoardListRequest().then(getLatestBoardListResponse);
+      getPopularListRequest().then(getPopularListResponse);
     }, [])
 
     
@@ -76,7 +114,7 @@ export default function Main() {
           <div className='main-bottom-title'>{'최신 게시물'}</div>
           <div className='main-bottom-contents-box'>
             <div className='main-bottom-current-contents'>
-              {currentBoardList.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}
+              {viewList.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}
               
             </div>
             <div className='main-bottom-popular-box'>
@@ -92,7 +130,14 @@ export default function Main() {
             </div>
           </div>
           <div className='main-bottom-pagination-box'>
-            {/* <Pagination /> */}
+            <Pagination 
+              currentPage={currentPage}
+              currentSection={currentSection}
+              setCurrentPage={setCurrentPage}
+              setCurrentSection={setCurrentSection}
+              viewPageList={viewPageList}
+              totalSection={totalSection}
+            />
           </div>
         </div>
       </div>

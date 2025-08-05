@@ -16,6 +16,8 @@ import com.hjh.board_back.dto.response.board.PatchBoardResponseDto;
 import com.hjh.board_back.dto.response.board.DeleteBoardResponseDto;
 import com.hjh.board_back.dto.response.board.GetLatestBaordListResponDto;
 import com.hjh.board_back.dto.response.board.GetTop3BoardListResponseDto;
+import com.hjh.board_back.dto.response.board.GetSearchBoardListResponseDto;
+import com.hjh.board_back.dto.response.board.GetUserBoardListResponseDto;
 
 public interface BoardService {
     
@@ -24,6 +26,8 @@ public interface BoardService {
     ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber);
     ResponseEntity<? super GetLatestBaordListResponDto> getLatestBoardList();
     ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList();
+    ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(String searchWord, String preSearchWord);
+    ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(String email);
    
     ResponseEntity<? super PostBoardResponseDto> postBoard(PostBoardRequestDto dto, String email );
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentResquestDto dto, Integer boardNumber, String email );
