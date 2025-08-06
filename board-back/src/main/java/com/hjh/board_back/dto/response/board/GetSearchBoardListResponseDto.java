@@ -20,6 +20,7 @@ public class GetSearchBoardListResponseDto extends ResponseDto {
 
     private GetSearchBoardListResponseDto(List<BoardListViewEntity> boardListViewEntities){
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
+        this.searchList = BoardListItem.getList(boardListViewEntities);
     }
 
     public static ResponseEntity<GetSearchBoardListResponseDto> success(List<BoardListViewEntity> boardListViewEntities){

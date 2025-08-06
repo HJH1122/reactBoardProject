@@ -14,24 +14,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardListItem {
 
-    private int BoardNumber;
+    private int boardNumber;
     private String title;
     private String content;
     private String boardTitleImage;
     private int favoriteCount;
-    private int commnetCount;
+    private int commentCount;
     private int viewCount;
     private String writeDatetime;
     private String writerNickname;
     private String writerProfileImage;
 
     public BoardListItem(BoardListViewEntity boardListViewEntity){
-        this.BoardNumber = boardListViewEntity.getBoardNumber();
+        this.boardNumber = boardListViewEntity.getBoardNumber();
         this.title = boardListViewEntity.getTitle();
         this.content = boardListViewEntity.getContent();
         this.boardTitleImage = boardListViewEntity.getTitleImage();
         this.favoriteCount = boardListViewEntity.getFavoriteCount();
-        this.commnetCount = boardListViewEntity.getCommentCount();
+        this.commentCount = boardListViewEntity.getCommentCount();
         this.viewCount = boardListViewEntity.getViewCount();
         this.writeDatetime = boardListViewEntity.getWriteDatetime();
         this.writerNickname = boardListViewEntity.getWriterNickname();

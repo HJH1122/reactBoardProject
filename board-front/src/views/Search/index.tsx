@@ -92,10 +92,10 @@ export default function Search() {
           <div className='search-relation-box'>
             <div className='search-relation-card'>
               <div className='search-relation-card-container'>
-                <div className='search-relation-card-title'></div>
+                <div className='search-relation-card-title'>{'관련 검색어'}</div>
 
                   {relativeWordList.length === 0 ? 
-                    <div className='search-relation-card-contents-nothing'></div> :
+                    <div className='search-relation-card-contents-nothing'>{'관련 검색어가 없습니다.'}</div> :
                     <div className='search-relation-card-contents'>
                     {relativeWordList.map(word => <div className='word-badge' onClick={()=>onRelationWordClickHandler(word)}>{word}</div>)}
                     </div>
