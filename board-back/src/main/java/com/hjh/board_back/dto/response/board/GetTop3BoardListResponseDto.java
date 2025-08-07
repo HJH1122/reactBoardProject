@@ -11,8 +11,10 @@ import com.hjh.board_back.dto.object.BoardListItem;
 import com.hjh.board_back.dto.response.ResponseDto;
 import com.hjh.board_back.entity.BoardListViewEntity;
 
+import lombok.Getter;
 
 
+@Getter
 public class GetTop3BoardListResponseDto extends ResponseDto{
 
     private List<BoardListItem> top3List;

@@ -99,7 +99,7 @@ export default function Authentication() {
 
     return(
       <div className='auth-card'>
-        <div className='auth-box'>
+        <div className='auth-card-box'>
           <div className='auth-card-top'>
             <div className='auth-card-title-box'>
               <div className='auth-card-title'>{'로그인'}</div>
@@ -458,7 +458,7 @@ export default function Authentication() {
             <div className='auth-logo-icon'></div>
             <div className='auth-jumbotron-text-box'>
               <div className='auth-jumbotron-text'>{'환영합니다'}</div>
-              <div className='auth-jumbotron-text'>{'보드게시판입니다'}</div>
+              <div className='auth-jumbotron-text'>{'블로그형 게시판입니다'}</div>
             </div>
           </div>
         </div>
