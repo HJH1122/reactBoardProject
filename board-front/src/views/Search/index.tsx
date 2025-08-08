@@ -15,7 +15,6 @@ import { GetRelationListResponseDto } from 'apis/response/search';
 export default function Search() {
 
   const {searchWord} = useParams();
-  console.log("현재 검색어 (URL 파라미터):", searchWord);
 
   const {
         currentPage,
@@ -36,7 +35,6 @@ export default function Search() {
   const navigate = useNavigate();
 
   const getSearchBoardListResponse = (responseBody: GetSearchBoardListResponseDto | ResponseDto | null) =>{
-    console.log("검색 응답:", responseBody);  // 응답 로그 추가
     if(!responseBody) return;
     const {code} = responseBody;
     if(code === 'DBE') alert('데이터베이스 오류입니다.');

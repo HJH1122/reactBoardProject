@@ -11,7 +11,6 @@ interface Props{
 
 // component : Comment List Item 컴포넌트
 export default function CommentItem({commentListItem}: Props) {
-  console.log('commentListItem:', commentListItem);
 
     // properties
     const {nickname, profileImage, writeDatetime, content} = commentListItem;

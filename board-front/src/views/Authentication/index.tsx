@@ -64,7 +64,6 @@ export default function Authentication() {
 
 
     const onSignInButtonClickHandler = () =>{
-      console.log("로그인 요청 - 이메일:", email, "비밀번호:", password);  // 로그로 출력
       const requestBody: SignInRequestDto = {email, password};
       signInRequest(requestBody).then(signInResponse);
     }

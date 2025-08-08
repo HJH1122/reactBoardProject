@@ -96,9 +96,6 @@ export default function Main() {
     }
 
     const onPopularWordClickHandler = (word: string) =>{
-      console.log("검색어 클릭:", word); // 클릭된 검색어 출력
-  const searchPath = SEARCH_PATH(word); // 검색 경로 생성
-  console.log("검색 경로:", searchPath); // 생성된 검색 경로 출력
       navigate(SEARCH_PATH(word));
     }
 
